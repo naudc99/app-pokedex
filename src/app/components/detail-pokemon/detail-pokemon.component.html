@@ -1,0 +1,10 @@
+<div class="pokemon-detail-modal">
+  <h2>{{ data.name | titlecase }}</h2>
+  <img [src]="data.sprites?.front_default" [alt]="data.name" />
+  <p><strong>Height:</strong> {{ data.height }} dm</p>
+  <p><strong>Weight:</strong> {{ data.weight }} hg</p>
+  <p><strong>Type:</strong> {{ data.types.join(', ') }}</p>
+  <p><strong>Description:</strong> {{ data.description }}</p>
+</div>
+
+  

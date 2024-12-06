@@ -1,0 +1,15 @@
+<nav class="navbar">
+    <div class="container">
+      <h1 class="navbar-title">Pokedex</h1>
+      <div class="search-container">
+        <input
+          type="search"
+          placeholder="Buscar Pokemon"
+          class="search-input"
+          [(ngModel)]="searchTerm"
+          (input)="onSearch()"
+        />
+      </div>
+    </div>
+  </nav>
+  

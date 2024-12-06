@@ -1,0 +1,16 @@
+<div class="pokedex-container">
+  <div class="pokemon-detail" *ngIf="selectedPokemon">
+    <img [src]="selectedPokemon.sprites.front_default" [alt]="selectedPokemon.name">
+  </div>
+  <div class="pokemon-list" #pokemonListContainer>
+    <div *ngFor="let pokemon of filteredPokemons"
+         class="pokemon-item"
+         [class.selected]="selectedPokemon?.id === pokemon.id"
+         (click)="selectPokemon(pokemon)">
+      <img [src]="pokemon.sprites.front_default" [alt]="pokemon.name">
+      <span>{{ pokemon.name | titlecase }}</span>
+      <span class="pokemon-number">#{{ pokemon.id.toString().padStart(3, '0') }}</span>
+    </div>
+    <div *ngIf="loading" class="loading">Cargando más Pokémon...</div>
+  </div>
+</div>
