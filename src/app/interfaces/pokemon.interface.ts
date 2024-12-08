@@ -4,4 +4,16 @@ export interface Pokemon {
   sprites: {
     front_default: string;
   };
+  types: Array<{
+    type: {
+      name: string;
+    }
+  }>;
+  height: number;
+  weight: number;
+  abilities: Array<{
+    ability: {
+      name: string;
+    };
+  }>;
 }

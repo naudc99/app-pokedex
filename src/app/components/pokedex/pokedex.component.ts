@@ -1,34 +1,37 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+// pokedex.component.ts
+import { Component, ElementRef, ViewChild, OnInit } from '@angular/core';
 import { PokemonService } from '../../services/pokemon.service';
 import { SearchService } from '../../services/search.service';
 import { CommonModule } from '@angular/common';
-import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { MatDialog, MatDialogModule, MatDialogConfig } from '@angular/material/dialog';
+import { DetailPokemonComponent } from '../detail-pokemon/detail-pokemon.component';
 
 @Component({
   selector: 'app-pokedex',
   standalone: true,
-  imports: [CommonModule, InfiniteScrollModule],
+  imports: [CommonModule, MatDialogModule],
   templateUrl: './pokedex.component.html',
   styleUrls: ['./pokedex.component.scss']
 })
-export class PokedexComponent implements AfterViewInit {
-  pokemons: any[] = []; // Lista paginada de Pokémon
-  filteredPokemons: any[] = []; // Lista filtrada para la búsqueda
+export class PokedexComponent implements OnInit {
+  pokemons: any[] = [];
+  filteredPokemons: any[] = [];
   offset = 0;
   limit = 10;
   loading = false;
   selectedPokemon: any = null;
-  isSearching = false; // Bandera para determinar si estamos en búsqueda
+  isSearching = false;
 
   @ViewChild('pokemonListContainer') pokemonListContainer!: ElementRef;
 
   constructor(
     private pokemonService: PokemonService,
-    private searchService: SearchService
+    private searchService: SearchService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit() {
-    this.loadMorePokemon(); // Cargar más Pokémon inicialmente
+    this.loadMorePokemon();
     this.searchService.searchTerm$.subscribe((term) => {
       this.onSearch(term);
     });
@@ -39,7 +42,7 @@ export class PokedexComponent implements AfterViewInit {
   }
 
   loadMorePokemon() {
-    if (this.loading || this.isSearching) return; // Evitar solicitudes si estamos buscando
+    if (this.loading || this.isSearching) return;
     this.loading = true;
 
     this.pokemonService.getPokemonList(this.offset, this.limit).subscribe(
@@ -47,40 +50,65 @@ export class PokedexComponent implements AfterViewInit {
         if (newPokemons.length > 0) {
           this.pokemons = [...this.pokemons, ...newPokemons];
           if (!this.isSearching) {
-            this.filteredPokemons = [...this.pokemons]; // Actualizamos solo si no hay búsqueda
+            this.filteredPokemons = [...this.pokemons];
+            if (this.offset === 0 && !this.selectedPokemon) {
+              this.selectPokemon(this.filteredPokemons[0]);
+            }
           }
-          this.offset += this.limit; // Incrementar el offset
+          this.offset += this.limit;
         } else {
           console.log('No hay más Pokémon para cargar.');
         }
-        this.loading = false; // Cambiar el estado de carga
+        this.loading = false;
       },
       (error) => {
         console.error('Error al cargar Pokémon:', error);
-        this.loading = false; // Restablecer estado de carga
+        this.loading = false;
       }
     );
   }
 
   onSearch(term: string) {
     if (term) {
-      this.isSearching = true; // Indicamos que estamos en modo búsqueda
+      this.isSearching = true;
       this.pokemonService.searchPokemonByName(term).subscribe(
         (result) => {
-          this.filteredPokemons = result; // Mostrar resultados de la búsqueda
+          this.filteredPokemons = result;
+          if (this.filteredPokemons.length > 0) {
+            this.selectPokemon(this.filteredPokemons[0]);
+          } else {
+            this.selectedPokemon = null;
+          }
         },
         (error) => {
           console.error('Error al buscar Pokémon:', error);
         }
       );
     } else {
-      this.isSearching = false; // Terminamos la búsqueda
-      this.filteredPokemons = [...this.pokemons]; // Mostramos la lista completa
+      this.isSearching = false;
+      this.filteredPokemons = [...this.pokemons];
+      if (this.filteredPokemons.length > 0) {
+        this.selectPokemon(this.filteredPokemons[0]);
+      }
     }
   }
 
   selectPokemon(pokemon: any) {
     this.selectedPokemon = pokemon;
+  }
+
+  openDialog(pokemon: any) {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.data = pokemon;
+    dialogConfig.width = '90%';
+    dialogConfig.maxWidth = '400px';
+    dialogConfig.position = {
+      top: '50%',
+      left: '50%'
+    };
+    dialogConfig.panelClass = 'center-dialog';
+
+    this.dialog.open(DetailPokemonComponent, dialogConfig);
   }
 
   onScroll(): void {

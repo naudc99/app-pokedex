@@ -1,10 +1,57 @@
-<div class="pokemon-detail-modal">
-  <h2>{{ data.name | titlecase }}</h2>
-  <img [src]="data.sprites?.front_default" [alt]="data.name" />
-  <p><strong>Height:</strong> {{ data.height }} dm</p>
-  <p><strong>Weight:</strong> {{ data.weight }} hg</p>
-  <p><strong>Type:</strong> {{ data.types.join(', ') }}</p>
-  <p><strong>Description:</strong> {{ data.description }}</p>
+<div class="dialog-overlay" (click)="onClose()">
+  <div class="dialog-container" (click)="$event.stopPropagation()">
+    <div class="pokemon-content" *ngIf="pokemon && species && ability && types.length">
+      <!-- Header -->
+      <div class="header-section">
+        <div class="pokemon-header">
+          <div class="pokemon-title">
+            <span class="pokemon-number">N.° {{pokemon.id}}</span>
+            <span class="pokemon-name">{{pokemon.name | titlecase}}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="content-section">
+        <!-- Pokemon Image -->
+        <div class="pokemon-image">
+          <img [src]="pokemon.sprites.front_default" [alt]="pokemon.name">
+        </div>
+
+        <!-- Pokemon Info -->
+        <div class="info-panel">
+          <div class="info-grid">
+            <div class="info-row">
+              <span class="info-label">Tipo</span>
+              <div class="type-badges">
+                <span 
+                  *ngFor="let type of types; let i = index"
+                  class="type-badge"
+                  [style.background-color]="getTypeColor(getTypeName(type))"
+                >
+                  {{getTypeName(type)}}
+                </span>
+              </div>
+            </div>
+
+            <div class="info-row">
+              <span class="info-label">Altura</span>
+              <span class="info-value">{{pokemon.height / 10}} m</span>
+            </div>
+
+            <div class="info-row">
+              <span class="info-label">Peso</span>
+              <span class="info-value">{{pokemon.weight / 10}} kg</span>
+            </div>
+          </div>
+
+          <div class="ability-section">
+            <h4 class="ability-title">{{getAbilityName()}}</h4>
+            <p class="pokemon-description">{{getPokemonDescription()}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
-  

@@ -1,5 +1,6 @@
+<!-- pokedex.component.html -->
 <div class="pokedex-container">
-  <div class="pokemon-detail" *ngIf="selectedPokemon">
+  <div class="pokemon-detail" *ngIf="selectedPokemon" (click)="openDialog(selectedPokemon)">
     <img [src]="selectedPokemon.sprites.front_default" [alt]="selectedPokemon.name">
   </div>
   <div class="pokemon-list" #pokemonListContainer>
