@@ -1,3 +1,5 @@
+import { Stat } from "./pokemon-stats.interface";
+
 export interface Pokemon {
   id: number;
   name: string;
@@ -16,4 +18,5 @@ export interface Pokemon {
       name: string;
     };
   }>;
+  stats: Stat[]; 
 }

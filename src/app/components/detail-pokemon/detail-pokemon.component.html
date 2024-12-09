@@ -1,53 +1,84 @@
 <div class="dialog-overlay" (click)="onClose()">
   <div class="dialog-container" (click)="$event.stopPropagation()">
-    <div class="pokemon-content" *ngIf="pokemon && species && ability && types.length">
-      <!-- Header -->
-      <div class="header-section">
-        <div class="pokemon-header">
-          <div class="pokemon-title">
-            <span class="pokemon-number">N.° {{pokemon.id}}</span>
-            <span class="pokemon-name">{{pokemon.name | titlecase}}</span>
-          </div>
-        </div>
+    <div class="pokemon-content main-content" *ngIf="pokemon && species && ability && types.length">
+      <div class="pokemon-title">
+        <span class="pokemon-number">N.° {{pokemon.id}}</span>
+        <span class="pokemon-name">{{pokemon.name | titlecase}}</span>
       </div>
 
-      <!-- Content -->
-      <div class="content-section">
-        <!-- Pokemon Image -->
-        <div class="pokemon-image">
+      <div class="content-grid">
+        <div class="pokemon-image-container">
           <img [src]="pokemon.sprites.front_default" [alt]="pokemon.name">
         </div>
 
-        <!-- Pokemon Info -->
         <div class="info-panel">
-          <div class="info-grid">
-            <div class="info-row">
-              <span class="info-label">Tipo</span>
-              <div class="type-badges">
-                <span 
-                  *ngFor="let type of types; let i = index"
-                  class="type-badge"
-                  [style.background-color]="getTypeColor(getTypeName(type))"
-                >
-                  {{getTypeName(type)}}
-                </span>
+          <div class="tab-buttons">
+            <button (click)="activeTab = 'description'" [class.active]="activeTab === 'description'">Descripción</button>
+            <button (click)="activeTab = 'stats'" [class.active]="activeTab === 'stats'">Estadísticas</button>
+            <button (click)="activeTab = 'evolution'" [class.active]="activeTab === 'evolution'">Evolución</button>
+          </div>
+
+          <div class="tab-content">
+            <div *ngIf="activeTab === 'description'">
+              <div class="info-grid">
+                <div class="info-row">
+                  <span class="info-label">Tipo</span>
+                  <div class="type-badges">
+                    <span 
+                      *ngFor="let type of types"
+                      class="type-badge"
+                      [style.background-color]="getTypeColor(getTypeName(type))"
+                    >
+                      {{getTypeName(type)}}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="info-row">
+                  <span class="info-label">Altura</span>
+                  <span class="info-value">{{pokemon.height / 10}} m</span>
+                </div>
+
+                <div class="info-row">
+                  <span class="info-label">Peso</span>
+                  <span class="info-value">{{pokemon.weight / 10}} kg</span>
+                </div>
+
+                <div class="info-row description-row">
+                  <span class="info-label">{{getAbilityName()}}</span>
+                  <p class="pokemon-description">{{getPokemonDescription()}}</p>
+                </div>
               </div>
             </div>
 
-            <div class="info-row">
-              <span class="info-label">Altura</span>
-              <span class="info-value">{{pokemon.height / 10}} m</span>
+            <div *ngIf="activeTab === 'stats'">
+              <div class="stats-list">
+                <div *ngFor="let stat of stats" class="stat-container">
+                  <div class="stat-info">
+                    <span class="stat-name">{{getStatName(stat.stat.name)}}</span>
+                    <span class="stat-value">{{stat.base_stat}}</span>
+                  </div>
+                  <div class="progress-bar-container">
+                    <div class="progress-bar" [ngStyle]="{
+                      'width': getStatWidth(stat.base_stat) + '%',
+                      'background-color': getStatColor(stat.base_stat)
+                    }"></div>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div class="info-row">
-              <span class="info-label">Peso</span>
-              <span class="info-value">{{pokemon.weight / 10}} kg</span>
+            <div *ngIf="activeTab === 'evolution'">
+              <div class="evolution-list">
+                <ng-container *ngFor="let evolution of getEvolutionChainDetails(); let i = index; let last = last">
+                  <div class="evolution-item">
+                    <img [src]="evolution.imageUrl" [alt]="evolution.name">
+                    <span>{{evolution.name | titlecase}}</span>
+                  </div>
+                  <span *ngIf="!last" class="evolution-arrow">→</span>
+                </ng-container>
+              </div>
             </div>
-          </div>
-
-          <div class="ability-section">
-            <h4 class="ability-title">{{getAbilityName()}}</h4>
-            <p class="pokemon-description">{{getPokemonDescription()}}</p>
           </div>
         </div>
       </div>
